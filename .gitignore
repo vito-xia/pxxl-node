@@ -1,0 +1,7 @@
+pxxl.env
+*.env
+node_modules/
+web-worker
+xray.zip
+geoip.dat
+geosite.dat
