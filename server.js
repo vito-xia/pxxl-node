@@ -6,6 +6,9 @@ const uuid = process.env.UUID || process.env.APP_KEY;
 const wsPath = process.env.WSPATH || process.env.API_ROUTE || '/api/v1/sync';
 const vmPath = process.env.VMPATH || '/api/v2/sync';
 const VMESS_PORT = 10080;
+const ssPath = process.env.SSPATH || '/api/v3/sync';
+const ssPass = process.env.SSPASS || '';
+const SS_PORT = 10081;
 const port = parseInt(process.env.PORT || '8080', 10);
 if (!uuid) { console.error('UUID required'); process.exit(1); }
 const bin = path.join(__dirname, 'web-worker');
@@ -19,7 +22,8 @@ const cfg = {
     listen: '0.0.0.0', port,
     protocol: 'vless',
     settings: { clients: [{ id: uuid }], decryption: 'none',
-      fallbacks: [{ path: vmPath, dest: '127.0.0.1:' + VMESS_PORT, xver: 0 }] },
+      fallbacks: [{ path: vmPath, dest: '127.0.0.1:' + VMESS_PORT, xver: 0 },
+                  { path: ssPath, dest: '127.0.0.1:' + SS_PORT, xver: 0 }] },
     streamSettings: { network: 'ws', wsSettings: { path: wsPath } },
     sniffing: { enabled: true, destOverride: ['http', 'tls', 'quic'] }
   }, {
@@ -27,6 +31,11 @@ const cfg = {
     protocol: 'vmess',
     settings: { clients: [{ id: uuid, alterId: 0 }] },
     streamSettings: { network: 'ws', wsSettings: { path: vmPath } }
+  }, {
+    listen: '127.0.0.1', port: SS_PORT,
+    protocol: 'shadowsocks',
+    settings: { method: 'aes-128-gcm', password: ssPass, network: 'tcp,udp' },
+    streamSettings: { network: 'ws', wsSettings: { path: ssPath } }
   }],
   outbounds: [
     { protocol: 'freedom', tag: 'direct', settings: { domainStrategy: 'UseIPv4' } },
