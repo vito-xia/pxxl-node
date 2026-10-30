@@ -17,7 +17,7 @@ if (!fs.existsSync(bin)) {
   catch (e) { process.exit(1); }
 }
 const cfg = {
-  log: { loglevel: 'warning' },
+  log: { loglevel: 'info' },
   inbounds: [{
     listen: '0.0.0.0', port,
     protocol: 'vless',
